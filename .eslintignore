@@ -1,0 +1,6 @@
+# >>> domelint-start
+# this block was auto-generated with do-me-lint
+dist
+# <<< domelint-end
+
+vite.config.ts
