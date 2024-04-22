@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 /* eslint-disable max-params */
 /* eslint-disable no-param-reassign */
 export function isCloseEnough(a: number, b: number, sigma = 0.005) {
@@ -105,4 +106,8 @@ export function interpolate(
   const percent = index / (C3.x - C1.x)
 
   return C1.y * b1(percent) + C2.y * b2(percent) + C3.y * b3(percent)
+}
+
+export function clamp(value: number, min: number, max: number) {
+  return Math.max(Math.min(value, max), min)
 }

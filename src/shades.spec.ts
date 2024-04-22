@@ -46,4 +46,18 @@ describe('shades', () => {
       '#f1f0ff',
     ])
   })
+  it('must work with alpha', () => {
+    expect(genShades('#25fa5468', opts)).toEqual([
+      '#00310a69',
+      '#00460e69',
+      '#015e1469',
+      '#01781a69',
+      '#02922069',
+      '#03ac2769',
+      '#04c52d69',
+      '#05df3469',
+      '#24fa5369',
+      '#aaffc169',
+    ])
+  })
 })

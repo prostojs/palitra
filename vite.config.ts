@@ -16,7 +16,7 @@ export default defineConfig({
       formats: ['es', 'cjs'],
     },
     rollupOptions: {
-      external: ['defu', 'chroma-js'],
+      external: ['defu'],
     },
   },
 })

@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+
 import { palitra } from './palitra'
 
 describe('palitra', () => {
@@ -66,7 +67,7 @@ describe('palitra', () => {
         "brand-900": "#2e127c",
         "grey": "#303030",
         "grey-a": "#040404",
-        "grey-b": "#191919",
+        "grey-b": "#181818",
         "grey-c": "#303030",
         "grey-d": "#4a4a4a",
         "grey-e": "#666666",

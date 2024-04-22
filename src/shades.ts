@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable sonarjs/cognitive-complexity */
-import chroma from 'chroma-js'
 import { defu } from 'defu'
 
+import { chromaMini as chroma } from './colors'
 import { defaultOptions } from './default-options'
 import type { TShadesOptions, TShadesOptionsInput } from './types'
 import { adjustLumArray, getVividDist, interpolateArray, isCloseEnough } from './utils'
@@ -9,9 +10,9 @@ import { adjustLumArray, getVividDist, interpolateArray, isCloseEnough } from '.
 export function genShades(color: string, _opts?: TShadesOptionsInput) {
   const opts = defu(_opts, defaultOptions) as TShadesOptions
   const count = opts.count - 1
-  if (!chroma.valid(color)) {
-    return []
-  }
+  // if (!chroma.valid(color)) {
+  //   return []
+  // }
   const c = chroma(color)
   const [hue, sat, _l, a] = c.hsl() as unknown as [number, number, number, number]
   const [pbr] = c.oklab()
@@ -54,13 +55,16 @@ export function genShades(color: string, _opts?: TShadesOptionsInput) {
   const result: string[] = []
   for (let i = 0; i < opts.count; i++) {
     const targetPbr = adjustedLumArray[i]
-    const targetSat = satArray[i]
+    let targetSat = satArray[i]
     let targetHue = hue + vividArray[i]
     if (targetHue >= 360) {
       targetHue = targetHue - 360
     }
     if (targetHue < 0) {
       targetHue = targetHue + 360
+    }
+    if (Number.isNaN(targetHue)) {
+      targetSat = 0
     }
     const newOklab = chroma(targetHue, targetSat, targetPbr, 'hsl').oklab()
     newOklab[0] = targetPbr
