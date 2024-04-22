@@ -2,15 +2,44 @@
   "name": "@prostojs/palitra",
   "version": "0.0.1",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "sideEffects": false,
+  "customBuild": true,
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/prostojs/palitra"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "palitra",
+    "shades",
+    "colors",
+    "palette",
+    "oklab"
+  ],
+  "author": "Artem Maltsev",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/prostojs/palitra/issues"
+  },
+  "homepage": "https://github.com/prostojs/palitra/tree/main#readme",
   "dependencies": {
     "chroma-js": "^2.4.2",
     "defu": "^6.1.4"
