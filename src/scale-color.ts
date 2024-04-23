@@ -2,19 +2,21 @@
 /* eslint-disable sonarjs/cognitive-complexity */
 import { defu } from 'defu'
 
-import { chromaMini as chroma } from './colors'
-import { defaultOptions } from './default-options'
 import type { TShadesOptions, TShadesOptionsInput } from './types'
-import { adjustLumArray, getVividDist, interpolateArray, isCloseEnough } from './utils'
+import { color } from './utils/colors'
+import { defaultOptions } from './utils/default-options'
+import { shade } from './utils/shade'
+import { adjustLumArray, getVividDist, interpolateArray } from './utils/utils'
 
-export function genShades(color: string, _opts?: TShadesOptionsInput) {
+export function scaleColor(input: string, _opts?: TShadesOptionsInput) {
   const opts = defu(_opts, defaultOptions) as TShadesOptions
   const count = opts.count - 1
-  // if (!chroma.valid(color)) {
+  // if (!chroma.valid(input)) {
   //   return []
   // }
-  const c = chroma(color)
-  const [hue, sat, _l, a] = c.hsl() as unknown as [number, number, number, number]
+  const c = color(input)
+  const [hue, sat, _l] = c.hsl() as unknown as [number, number, number, number]
+  const [, , , a] = c.rgba()
   const [pbr] = c.oklab()
 
   const vivid = getVividDist(hue)
@@ -66,26 +68,8 @@ export function genShades(color: string, _opts?: TShadesOptionsInput) {
     if (Number.isNaN(targetHue)) {
       targetSat = 0
     }
-    const newOklab = chroma(targetHue, targetSat, targetPbr, 'hsl').oklab()
-    newOklab[0] = targetPbr
-    let l = chroma(...newOklab, 'oklab').hsl()[2]
-    let newShade = chroma(targetHue, targetSat, l, 'hsl')
-    let newPbr = newShade.oklab()[0]
-    let step = 0.2
-    let j = 0
-    while (!isCloseEnough(newPbr, targetPbr)) {
-      j++
-      l = newPbr > targetPbr ? l - step : l + step
-      newShade = chroma(targetHue, targetSat, l, 'hsl')
-      newPbr = newShade.oklab()[0]
-      if (step > 0.003) {
-        step = step / 2
-      }
-      if (j > 100) {
-        break
-      }
-    }
-    result.push(chroma(targetHue, targetSat, l, a, 'hsl').hex())
+    const [r, g, b] = shade(targetHue, targetSat, targetPbr).color.rgb()
+    result.push(color(r, g, b, a, 'rgb').hex())
   }
   return result
 }

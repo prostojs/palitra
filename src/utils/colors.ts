@@ -355,14 +355,14 @@ export function rgbToHsl(rgb: [number, number, number, number?]): [number, numbe
   return [r === g && g === b ? Number.NaN : h * 360, s, l, Math.round(a * 100) / 100]
 }
 
-export function chromaMini(
+export function color(
   ...args:
     | [string]
-    | [number, number, number, 'hsl' | 'oklab']
-    | [number, number, number, number, 'hsl']
+    | [number, number, number, 'hsl' | 'oklab' | 'rgb']
+    | [number, number, number, number, 'hsl' | 'rgb']
 ): TColor {
   const c = args[0]
-  let rgb: [number, number, number, number] = [0, 0, 0, 0]
+  let rgb: [number, number, number, number] | undefined
   if (typeof c === 'string') {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     rgb = toRgb(c)!
@@ -372,15 +372,29 @@ export function chromaMini(
     typeof args[2] === 'number'
   ) {
     const type = args[args.length - 1]
-    if (type === 'hsl') {
-      rgb = fromHsl(args[0], args[1], args[2], typeof args[3] === 'number' ? args[3] : undefined)
-    } else if (type === 'oklab') {
-      rgb = [...oklabToSRGB(args[0], args[1], args[2]), 255]
+    // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check
+    switch (type) {
+      case 'hsl': {
+        rgb = fromHsl(args[0], args[1], args[2], typeof args[3] === 'number' ? args[3] : undefined)
+        break
+      }
+      case 'oklab': {
+        rgb = [...oklabToSRGB(args[0], args[1], args[2]), 255]
+        break
+      }
+      case 'rgb': {
+        rgb = [args[0], args[1], args[2], typeof args[3] === 'number' ? args[3] : 255]
+        break
+      }
     }
   }
 
+  if (!rgb) {
+    throw new Error(`Not supported color "${args.join(', ')}"`)
+  }
   return {
     rgb: () => rgb.slice(0, 3) as [number, number, number],
+    rgba: () => rgb,
     hex: () => rgbToHex(rgb),
     oklab: () => rgbToOklab(rgb),
     hsl: () => rgbToHsl(rgb),
@@ -389,6 +403,7 @@ export function chromaMini(
 
 interface TColor {
   rgb: () => [number, number, number]
+  rgba: () => [number, number, number, number]
   hex: () => string
   oklab: () => [number, number, number]
   hsl: () => [number, number, number, number]

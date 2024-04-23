@@ -1,8 +1,8 @@
 import { defu } from 'defu'
 
-import { defaultOptions, defaultSuffixes } from './default-options'
-import { genShades } from './shades'
+import { scaleColor } from './scale-color'
 import type { TPalitra, TPalitraInput, TPalitraOptions, TShadesOptionsInput } from './types'
+import { defaultOptions, defaultSuffixes } from './utils/default-options'
 
 export function palitra(p: TPalitraInput, _opts?: TShadesOptionsInput & TPalitraOptions): TPalitra {
   const opts = defu(_opts, defaultOptions, { suffixes: defaultSuffixes })
@@ -20,7 +20,7 @@ export function palitra(p: TPalitraInput, _opts?: TShadesOptionsInput & TPalitra
       colOpts = defu(val, opts)
     }
     result[key] = color
-    const shades = genShades(color, colOpts)
+    const shades = scaleColor(color, colOpts)
     for (const [i, shade] of shades.entries()) {
       let suffix = colOpts.suffixes[i]
       if (!suffix) {

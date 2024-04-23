@@ -1,4 +1,4 @@
-import type { TShadesOptions } from './types'
+import type { TShadesOptions } from '../types'
 
 export const defaultOptions: TShadesOptions = {
   count: 10,

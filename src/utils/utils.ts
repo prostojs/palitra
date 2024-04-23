@@ -1,49 +1,37 @@
 /* eslint-disable complexity */
 /* eslint-disable max-params */
 /* eslint-disable no-param-reassign */
-export function isCloseEnough(a: number, b: number, sigma = 0.005) {
+export function isCloseEnough(a: number, b: number, sigma = 0.002) {
   return Math.abs(a - b) <= sigma
 }
 
 export function adjustLumArray(lumArray: number[], pbr: number) {
   let minDif = 1
   let closest = 0
-  let minus = false
-  let max = lumArray[0]
-  let min = lumArray[0]
+  let minus = 1
   for (const [i, element] of lumArray.entries()) {
-    if (element > max) {
-      max = element
-    }
-    if (element < min) {
-      min = element
-    }
     const dif = Math.abs(element - pbr)
     if (dif < minDif) {
       minDif = dif
-      minus = element - pbr > 0
+      minus = element - pbr > 0 ? -1 : 1
       closest = i
     }
   }
-  let newLumArray: number[] = []
-  if (minus) {
-    if (min - minDif > 0) {
-      newLumArray = lumArray.map(l => l - minDif)
-    } else {
-      closest--
-      minDif = Math.abs(lumArray[closest] - pbr)
-      newLumArray = lumArray.map(l => l + minDif)
-    }
-  } else if (max + minDif < 1) {
-    newLumArray = lumArray.map(l => l + minDif)
-  } else {
-    closest++
-    minDif = Math.abs(lumArray[closest] - pbr)
-    newLumArray = lumArray.map(l => l - minDif)
-  }
+  const lastI = lumArray.length - 1
+  const last = lumArray[lastI]
+  const difArray = [
+    ...(closest === 0
+      ? [(pbr - lumArray[0]) * minus]
+      : interpolateArray([0, closest], [0, minDif])),
+    ...(closest === lastI
+      ? [(pbr - last) * minus]
+      : interpolateArray([closest, lastI], [minDif, 0]).slice(1)),
+  ]
   return {
     closest,
-    adjustedLumArray: newLumArray,
+    adjustedLumArray: lumArray.map(
+      (v, i) => Math.round((v + difArray[i] * minus) * 100000) / 100000
+    ),
   }
 }
 

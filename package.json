@@ -1,6 +1,6 @@
 {
   "name": "@prostojs/palitra",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -43,8 +43,6 @@
     "defu": "^6.1.4"
   },
   "devDependencies": {
-    "chroma-js": "^2.4.2",
-    "@types/chroma-js": "^2.4.4",
     "@typescript-eslint/eslint-plugin": "6.3.0",
     "@typescript-eslint/parser": "6.3.0",
     "eslint": "8.55.0",

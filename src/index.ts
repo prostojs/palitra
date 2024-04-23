@@ -1,3 +1,3 @@
 export * from './palitra'
-export * from './shades'
+export * from './scale-color'
 export * from './types'

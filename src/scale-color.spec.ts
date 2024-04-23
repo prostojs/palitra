@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { genShades } from './shades'
+import { scaleColor } from './scale-color'
 
 const opts = {
   count: 10,
@@ -33,31 +33,31 @@ const opts = {
 
 describe('shades', () => {
   it('must generate shades', () => {
-    expect(genShades('blue', opts)).toEqual([
-      '#000097',
-      '#0000cb',
-      '#0101ff',
-      '#4544ff',
-      '#6765ff',
+    expect(scaleColor('blue', opts)).toEqual([
+      '#000094',
+      '#0000c7',
+      '#0000ff',
+      '#4645ff',
+      '#6967ff',
       '#8684ff',
-      '#a3a0ff',
-      '#bdbaff',
-      '#d6d4ff',
+      '#a29fff',
+      '#bcbaff',
+      '#d7d5ff',
       '#f1f0ff',
     ])
   })
   it('must work with alpha', () => {
-    expect(genShades('#25fa5468', opts)).toEqual([
-      '#00310a69',
-      '#00460e69',
-      '#015e1469',
-      '#01781a69',
-      '#02922069',
-      '#03ac2769',
-      '#04c52d69',
-      '#05df3469',
-      '#24fa5369',
-      '#aaffc169',
+    expect(scaleColor('#25fa5468', opts)).toEqual([
+      '#00390b68',
+      '#004f1068',
+      '#01661668',
+      '#017e1b68',
+      '#02962168',
+      '#03ae2768',
+      '#04c72e68',
+      '#05e13568',
+      '#1ffa4f68',
+      '#d2ffde68',
     ])
   })
 })
