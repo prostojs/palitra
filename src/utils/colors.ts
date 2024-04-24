@@ -158,12 +158,7 @@ const constColors = {
   yellowgreen: '9acd32',
 }
 
-export function fromHsl(
-  h: number,
-  s: number,
-  l: number,
-  a?: number
-): [number, number, number, number] {
+function fromHsl(h: number, s: number, l: number, a?: number): [number, number, number, number] {
   return hslToRgb(
     h,
     clamp(s, 0, 1) * 100,
@@ -172,7 +167,7 @@ export function fromHsl(
   )
 }
 
-export function toRgb(input: string): [number, number, number, number] | undefined {
+function toRgb(input: string): [number, number, number, number] | undefined {
   if (constColors[input as 'blue']) {
     input = `#${constColors[input as 'blue']}`
   }
@@ -257,7 +252,7 @@ function rgbToHex(rgb: [number, number, number, number?]): string {
   return `#${toHex(rgb[0])}${toHex(rgb[1])}${toHex(rgb[2])}${rgb[3]! < 255 ? toHex(rgb[3]!) : ''}`
 }
 
-export function hslToRgb(
+function hslToRgb(
   h: number | null,
   s: number,
   l: number,
@@ -319,7 +314,7 @@ export function hslToRgb(
   ] as [number, number, number, number]
 }
 
-export function rgbToHsl(rgb: [number, number, number, number?]): [number, number, number, number] {
+function rgbToHsl(rgb: [number, number, number, number?]): [number, number, number, number] {
   const r = rgb[0] / 255
   const g = rgb[1] / 255
   const b = rgb[2] / 255
@@ -401,7 +396,7 @@ export function color(
   }
 }
 
-interface TColor {
+export interface TColor {
   rgb: () => [number, number, number]
   rgba: () => [number, number, number, number]
   hex: () => string

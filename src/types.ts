@@ -1,22 +1,26 @@
-export interface TShadesOptionsInput {
+export interface TScaleOptionsInput {
   count?: number
-  luminance?: TShadesOption & {
+  preserveInputColor?: boolean
+  luminance?: TScaleOption & {
+    useMiddle?: boolean
     middle?: number
   }
-  vivid?: TShadesOption
-  saturate?: TShadesOption
+  vivid?: TScaleOption
+  saturate?: TScaleOption
 }
 
-export interface TShadesOptions {
+export interface TScaleOptions {
   count: number
-  luminance: Required<TShadesOption<Required<TShadeSlopes>>> & {
+  preserveInputColor?: boolean
+  luminance: Required<TScaleOption<Required<TShadeSlopes>>> & {
+    useMiddle?: boolean
     middle: number
   }
-  vivid: Required<TShadesOption<Required<TShadeSlopes>>>
-  saturate: Required<TShadesOption<Required<TShadeSlopes>>>
+  vivid: Required<TScaleOption<Required<TShadeSlopes>>>
+  saturate: Required<TScaleOption<Required<TShadeSlopes>>>
 }
 
-interface TShadesOption<T = TShadeSlopes> {
+interface TScaleOption<T = TShadeSlopes> {
   dark?: number
   light?: number
   slopes?: T
@@ -29,10 +33,23 @@ interface TShadeSlopes {
 
 export type TPalitraInput = Record<string, TPalitraColor | undefined>
 
-export type TPalitraColor = string | (TShadesOptionsInput & { color: string } & TPalitraOptions)
+export type TPalitraColor<T = TScaleOptionsInput> =
+  | string
+  | (T & { color: string } & TPalitraOptions)
 
 export interface TPalitraOptions {
   suffixes?: string[]
 }
 
+export type TColorScale = string[]
+export type TDetailedColorScale = Array<{
+  color: string
+  isDark: boolean
+  pbr: number
+}> & { toStrings: () => TColorScale }
+
 export type TPalitra = Record<string, string | undefined>
+export type TDetailedPalitra = Record<
+  string,
+  (TDetailedColorScale[number] & { grp: string }) | undefined
+> & { toStrings: () => TPalitra }

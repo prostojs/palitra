@@ -1,10 +1,12 @@
-import type { TShadesOptions } from '../types'
+import type { TScaleOptions } from '../types'
 
-export const defaultOptions: TShadesOptions = {
+export const defaultOptions: TScaleOptions = {
   count: 10,
+  preserveInputColor: false,
   luminance: {
-    dark: 0.3,
-    middle: 0.6,
+    useMiddle: true,
+    dark: 0.27,
+    middle: 0.66,
     light: 0.96,
     slopes: {
       fromDark: 0.5,
@@ -29,15 +31,4 @@ export const defaultOptions: TShadesOptions = {
   },
 }
 
-export const defaultSuffixes = [
-  '900',
-  '800',
-  '700',
-  '600',
-  '500',
-  '400',
-  '300',
-  '200',
-  '100',
-  '050',
-]
+export const defaultSuffixes = ['900', '800', '700', '600', '500', '400', '300', '200', '100', '50']

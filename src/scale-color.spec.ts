@@ -4,7 +4,9 @@ import { scaleColor } from './scale-color'
 
 const opts = {
   count: 10,
+  preserveInputColor: true,
   luminance: {
+    useMiddle: true,
     dark: 0.3,
     middle: 0.6,
     light: 0.96,
@@ -33,7 +35,7 @@ const opts = {
 
 describe('shades', () => {
   it('must generate shades', () => {
-    expect(scaleColor('blue', opts)).toEqual([
+    expect(scaleColor('blue', opts).toStrings()).toEqual([
       '#000094',
       '#0000c7',
       '#0000ff',
@@ -47,7 +49,7 @@ describe('shades', () => {
     ])
   })
   it('must work with alpha', () => {
-    expect(scaleColor('#25fa5468', opts)).toEqual([
+    expect(scaleColor('#25fa5468', opts).toStrings()).toEqual([
       '#00390b68',
       '#004f1068',
       '#01661668',
