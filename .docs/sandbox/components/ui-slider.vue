@@ -40,13 +40,21 @@ let x = 0
 let v = 0
 const hold = ref(false)
 
-function onMousedown(event: MouseEvent) {
-  window.addEventListener('mouseup', onMouseup)
-  window.addEventListener('mousemove', onMove)
+function onMousedown(event: MouseEvent | TouchEvent) {
+  if (event instanceof MouseEvent) {
+    window.addEventListener('mouseup', onMouseup)
+    window.addEventListener('mousemove', onMove)
+  } else {
+    window.addEventListener('touchend', onMouseup)
+    window.addEventListener('touchmove', onMove)
+  }
   hold.value = true
-  x = event.screenX
+  if (event instanceof TouchEvent) {
+    x = event.touches[0].clientX // Get the x coordinate of the first touch point
+  } else {
+    x = event.clientX // Get the x coordinate for mouse event
+  }
   if (instance?.vnode.el) {
-    const x = event.clientX
     const el = instance.vnode.el as HTMLSpanElement
     const { width, left } = el.getBoundingClientRect()
     const dif = (x - left) / width
@@ -59,9 +67,15 @@ function onMousedown(event: MouseEvent) {
 
 const instance = getCurrentInstance()
 
-function onMove(event: MouseEvent) {
+function onMove(event: MouseEvent | TouchEvent) {
   if (instance?.vnode.el) {
-    const dif = event.screenX - x
+    let newX
+    if (event instanceof TouchEvent) {
+      newX = event.touches[0].clientX // Get the x coordinate of the first touch point
+    } else {
+      newX = event.clientX // Get the x coordinate for mouse event
+    }
+    const dif = newX - x
     const el = instance.vnode.el as HTMLSpanElement
     const width = el.getBoundingClientRect().width
     const change = (dif / width) * (props.max - props.min)
@@ -73,6 +87,8 @@ function onMouseup() {
   hold.value = false
   window.removeEventListener('mouseup', onMouseup)
   window.removeEventListener('mousemove', onMove)
+  window.removeEventListener('touchend', onMouseup)
+  window.removeEventListener('touchmove', onMove)
 }
 const id = computed(() => 'input-' + Math.random())
 </script>
@@ -92,6 +108,7 @@ const id = computed(() => 'input-' + Math.random())
     <span
       :id="id"
       @mousedown="onMousedown"
+      @touchstart="onMousedown"
       data-orientation="horizontal"
       class="relative flex touch-none select-none items-center w-full"
       aria-disabled="false"

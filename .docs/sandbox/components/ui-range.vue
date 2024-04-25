@@ -66,11 +66,20 @@ let _min = 0
 let _max = 0
 const hold = ref(false)
 
-function onMousedown(event: MouseEvent) {
-  window.addEventListener('mouseup', onMouseup)
-  window.addEventListener('mousemove', onMove)
+function onMousedown(event: MouseEvent | TouchEvent) {
+  if (event instanceof MouseEvent) {
+    window.addEventListener('mouseup', onMouseup)
+    window.addEventListener('mousemove', onMove)
+  } else {
+    window.addEventListener('touchend', onMouseup)
+    window.addEventListener('touchmove', onMove)
+  }
   hold.value = true
-  x = event.screenX
+  if (event instanceof TouchEvent) {
+    x = event.touches[0].clientX // Get the x coordinate of the first touch point
+  } else {
+    x = event.clientX // Get the x coordinate for mouse event
+  }
   if ((event.target as HTMLDivElement)?.dataset.bind === 'from') {
     v = safeFrom.value
     model = from
@@ -91,9 +100,15 @@ function onMousedown(event: MouseEvent) {
 
 const instance = getCurrentInstance()
 
-function onMove(event: MouseEvent) {
+function onMove(event: MouseEvent | TouchEvent) {
   if (instance?.vnode.el) {
-    const dif = event.screenX - x
+    let newX
+    if (event instanceof TouchEvent) {
+      newX = event.touches[0].clientX // Get the x coordinate of the first touch point
+    } else {
+      newX = event.clientX // Get the x coordinate for mouse event
+    }
+    const dif = newX - x
     const el = instance.vnode.el as HTMLSpanElement
     const width = el.getBoundingClientRect().width
     const change = (dif / width) * (props.max - props.min)
@@ -105,6 +120,8 @@ function onMouseup() {
   hold.value = false
   window.removeEventListener('mouseup', onMouseup)
   window.removeEventListener('mousemove', onMove)
+  window.removeEventListener('touchend', onMouseup)
+  window.removeEventListener('touchmove', onMove)
 }
 
 const id = computed(() => 'input-' + Math.random())
@@ -156,6 +173,7 @@ const id = computed(() => 'input-' + Math.random())
         @keydown.right.prevent="changeFrom(+1)"
         @keydown.left.prevent="changeFrom(-1)"
         @mousedown="onMousedown"
+        @touchstart="onMousedown"
         tabindex="0"
         data-orientation="horizontal"
         :aria-valuemin="min"
@@ -179,6 +197,7 @@ const id = computed(() => 'input-' + Math.random())
         @keydown.right.prevent="changeMiddle(+1)"
         @keydown.left.prevent="changeMiddle(-1)"
         @mousedown="onMousedown"
+        @touchstart="onMousedown"
         tabindex="0"
         data-orientation="horizontal"
         :aria-valuemin="min"
@@ -201,6 +220,7 @@ const id = computed(() => 'input-' + Math.random())
         @keydown.right.prevent="changeTo(+1)"
         @keydown.left.prevent="changeTo(-1)"
         @mousedown="onMousedown"
+        @touchstart="onMousedown"
         tabindex="0"
         data-orientation="horizontal"
         :aria-valuemin="min"

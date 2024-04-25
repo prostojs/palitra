@@ -107,13 +107,13 @@ onUnmounted(() => {
 </script>
 <template>
   <UiCollapse label="Output">
-    <div class="flex gap-0 flex-wrap py-4">
+    <div class="flex gap-0 flex-wrap pb-4">
       <div v-for="grp of paletteFormatted">
         <div
           v-for="shade of grp.shades"
-          class="w-90px h-30px lh-30px text-center text-xs"
+          class="w-90px h-30px lh-30px text-center text-xs group/shade"
           :class="{
-            'mb-4': shade.name === grp.name,
+            'my-4': shade.name === grp.name,
           }"
           :style="{
             'background-color': shade.color,
@@ -124,7 +124,14 @@ onUnmounted(() => {
             'color': shade.isDark ? grp.light : grp.dark,
           }"
         >
-          {{ shade.name }}
+          <span class="opacity-100 hidden group-hover/shade:block">{{ shade.color }}</span>
+          <span
+            class="group-hover/shade:hidden"
+            :class="{
+              'opacity-40': shade.name !== grp.name,
+            }"
+            >{{ shade.name }}</span
+          >
         </div>
       </div>
     </div>
@@ -498,10 +505,5 @@ onUnmounted(() => {
   background-color: var(--c-light);
   color: var(--c-dark);
   border-color: var(--c-light-2);
-}
-
-.VPDoc {
-  padding-left: 0 !important;
-  padding-right: 0 !important;
 }
 </style>

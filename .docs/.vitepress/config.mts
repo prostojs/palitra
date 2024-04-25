@@ -10,6 +10,9 @@ export default defineConfig({
     server: {
       host: '0.0.0.0',
     },
+    build: {
+      rollupOptions: {},
+    },
   },
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
