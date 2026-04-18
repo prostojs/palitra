@@ -1,3 +1,0 @@
-ignoredRules:
-  - 'unicorn/consistent-destructuring'
-  - '@typescript-eslint/strict-boolean-expressions'

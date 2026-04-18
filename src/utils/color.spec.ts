@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it } from 'vite-plus/test'
 import { color } from './colors'
 
 describe('color utils', () => {
@@ -28,7 +28,7 @@ describe('color utils', () => {
     expect(c.rgb()).toEqual([204, 204, 204])
     expect(c.hex()).toEqual('#cccccc')
     expect(c.oklab()).toEqual([0.8452222502970194, 6.84230450076484e-11, 3.150473615320948e-8])
-    expect(c.hsl()).toEqual([NaN, 0, 0.8, 1])
+    expect(c.hsl()).toEqual([Number.NaN, 0, 0.8, 1])
   })
   it('must work with opacity', () => {
     const c = color(250, 0.5, 0.4, 0.5, 'hsl')

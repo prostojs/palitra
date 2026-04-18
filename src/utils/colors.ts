@@ -167,13 +167,14 @@ function fromHsl(h: number, s: number, l: number, a?: number): [number, number, 
   )
 }
 
+const hexRegex = /^#(?:[\dA-Fa-f]{3}){1,2}(?:[\dA-Fa-f]{2})?$/
+const rgbRegex = /^rgba?\((\d+),\s*(\d+),\s*(\d+)(,\s*\d+)?\)$/
+const hslRegex = /^hsla?\((\d+),\s*(\d+)%,\s*(\d+)%(,\s*\d+)?\)$/
+
 function toRgb(input: string): [number, number, number, number] | undefined {
   if (constColors[input as 'blue']) {
     input = `#${constColors[input as 'blue']}`
   }
-  const hexRegex = /^#(?:[\dA-Fa-f]{3}){1,2}(?:[\dA-Fa-f]{2})?$/
-  const rgbRegex = /^rgba?\((\d+),\s*(\d+),\s*(\d+)(,\s*\d+)?\)$/
-  const hslRegex = /^hsla?\((\d+),\s*(\d+)%,\s*(\d+)%(,\s*\d+)?\)$/
 
   if (hexRegex.test(input)) {
     return hexToRgb(input)

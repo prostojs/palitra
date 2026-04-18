@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable sonarjs/cognitive-complexity */
 import { defu } from 'defu'
 
@@ -6,16 +5,21 @@ import type { TDetailedColorScale, TScaleOptions, TScaleOptionsInput } from './t
 import { color } from './utils/colors'
 import { defaultOptions } from './utils/default-options'
 import { shade } from './utils/shade'
-import { adjustLumArray, getVividDist, interpolateArray } from './utils/utils'
+import {
+  adjustLumArray,
+  clamp,
+  getVividDist,
+  interpolateArray,
+  isDark,
+  stitch,
+  wrapHue,
+} from './utils/utils'
 
 export function scaleColor(input: string, _opts?: TScaleOptionsInput): TDetailedColorScale {
   const opts = defu(_opts, defaultOptions) as TScaleOptions
   const count = opts.count - 1
-  // if (!chroma.valid(input)) {
-  //   return []
-  // }
   const c = color(input)
-  const [hue, sat, _l] = c.hsl() as unknown as [number, number, number, number]
+  const [hue, sat] = c.hsl()
   const [, , , a] = c.rgba()
 
   const vivid = getVividDist(hue)
@@ -23,18 +27,14 @@ export function scaleColor(input: string, _opts?: TScaleOptionsInput): TDetailed
   const optsMiddle = opts.luminance.useMiddle
     ? opts.luminance.middle
     : interpolateArray([0, count], [opts.luminance.dark, opts.luminance.light])[middle]
-  const lumArray = [
-    ...interpolateArray(
-      [0, middle],
-      [opts.luminance.dark, optsMiddle],
-      opts.luminance.slopes.fromDark
-    ),
-    ...interpolateArray(
-      [middle, count],
-      [optsMiddle, opts.luminance.light],
-      1 - opts.luminance.slopes.fromLight
-    ).slice(1),
-  ]
+
+  const lumArray = stitch(
+    middle,
+    count,
+    [opts.luminance.dark, optsMiddle],
+    [optsMiddle, opts.luminance.light],
+    opts.luminance.slopes
+  )
 
   let closest = middle
   let adjustedLumArray = lumArray
@@ -44,49 +44,34 @@ export function scaleColor(input: string, _opts?: TScaleOptionsInput): TDetailed
     closest = adjusted.closest
     adjustedLumArray = adjusted.adjustedLumArray
   }
-  const vividArray = [
-    ...interpolateArray([0, closest], [vivid[0] * opts.vivid.dark, 0], opts.vivid.slopes.fromDark),
-    ...interpolateArray(
-      [closest, count],
-      [0, vivid[1] * opts.vivid.light],
-      1 - opts.vivid.slopes.fromLight
-    ).slice(1),
-  ]
-  const satArray = [
-    ...interpolateArray(
-      [0, closest],
-      [Math.max(0, Math.min(sat + opts.saturate.dark, 1)), sat],
-      opts.saturate.slopes.fromDark
-    ),
-    ...interpolateArray(
-      [closest, count],
-      [sat, Math.max(0, Math.min(sat + opts.saturate.light, 1))],
-      1 - opts.saturate.slopes.fromLight
-    ).slice(1),
-  ]
-  const result: TDetailedColorScale = [] as unknown as TDetailedColorScale
+
+  const vividArray = stitch(
+    closest,
+    count,
+    [vivid[0] * opts.vivid.dark, 0],
+    [0, vivid[1] * opts.vivid.light],
+    opts.vivid.slopes
+  )
+  const satArray = stitch(
+    closest,
+    count,
+    [clamp(sat + opts.saturate.dark, 0, 1), sat],
+    [sat, clamp(sat + opts.saturate.light, 0, 1)],
+    opts.saturate.slopes
+  )
+
+  const arr: Array<{ color: string; isDark: boolean; pbr: number }> = []
   for (let i = 0; i < opts.count; i++) {
     const targetPbr = adjustedLumArray[i]
     let targetSat = satArray[i]
-    let targetHue = hue + vividArray[i]
-    if (targetHue >= 360) {
-      targetHue = targetHue - 360
-    }
-    if (targetHue < 0) {
-      targetHue = targetHue + 360
-    }
+    const targetHue = wrapHue(hue + vividArray[i])
     if (Number.isNaN(targetHue)) {
       targetSat = 0
     }
-    const [r, g, b] = shade(targetHue, targetSat, targetPbr).color.rgb()
-    const outColor = color(r, g, b, a, 'rgb')
-    const pbr = outColor.oklab()[0]
-    result.push({
-      color: outColor.hex(),
-      pbr,
-      isDark: pbr < 0.72,
-    })
+    const { color: shadeColor, pbr } = shade(targetHue, targetSat, targetPbr)
+    const [r, g, b] = shadeColor.rgb()
+    const outColor = a < 255 ? color(r, g, b, a, 'rgb') : shadeColor
+    arr.push({ color: outColor.hex(), pbr, isDark: isDark(pbr) })
   }
-  result.toStrings = () => result.map(r => r.color)
-  return result
+  return Object.assign(arr, { toStrings: () => arr.map(r => r.color) })
 }

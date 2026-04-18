@@ -12,13 +12,14 @@ import type {
 } from './types'
 import { color as colorFn } from './utils/colors'
 import { defaultOptions, defaultSuffixes } from './utils/default-options'
+import { isDark } from './utils/utils'
 
 export function palitra(
   p: TPalitraInput,
   _opts?: TScaleOptionsInput & TPalitraOptions
 ): TDetailedPalitra {
   const opts = defu(_opts, defaultOptions, { suffixes: defaultSuffixes })
-  const result: TDetailedPalitra = {} as TDetailedPalitra
+  const result = {} as TDetailedPalitra
   for (const [key, val] of Object.entries(p)) {
     if (!val) {
       continue
@@ -32,29 +33,27 @@ export function palitra(
       colOpts = defu(val, opts)
     }
     const shades = scaleColor(color, colOpts as TScaleOptionsInput)
-    const middle = Math.floor(((colOpts.count || 10) - 1) / 2)
     for (const [i, shade] of shades.entries()) {
-      let suffix = colOpts.suffixes[i]
-      if (!suffix) {
-        suffix = `--${i}`
-      }
+      const suffix = colOpts.suffixes[i] ?? `--${i}`
       result[[key, suffix].join('-')] = { ...shade, grp: key }
     }
     if (colOpts.preserveInputColor) {
       const pbr = colorFn(color).oklab()[0]
-      result[key] = { color, grp: key, pbr, isDark: pbr < 0.72 }
+      result[key] = { color, grp: key, pbr, isDark: isDark(pbr) }
     } else {
+      const middle = Math.floor((colOpts.count - 1) / 2)
       result[key] = { ...shades[middle], grp: key }
     }
   }
-  result.toStrings = () => {
-    const obj: TPalitra = {}
-    for (const [key, val] of Object.entries(result)) {
-      if (val && typeof val !== 'function') {
-        obj[key] = val.color
+  return Object.assign(result, {
+    toStrings: () => {
+      const obj: TPalitra = {}
+      for (const [key, val] of Object.entries(result)) {
+        if (val && typeof val !== 'function') {
+          obj[key] = val.color
+        }
       }
-    }
-    return obj
-  }
-  return result
+      return obj
+    },
+  })
 }

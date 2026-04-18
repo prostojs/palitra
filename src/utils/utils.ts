@@ -5,6 +5,14 @@ export function isCloseEnough(a: number, b: number, sigma = 0.002) {
   return Math.abs(a - b) <= sigma
 }
 
+export function isDark(pbr: number) {
+  return pbr < 0.72
+}
+
+export function wrapHue(h: number) {
+  return ((h % 360) + 360) % 360
+}
+
 export function adjustLumArray(lumArray: number[], pbr: number) {
   let minDif = 1
   let closest = 0
@@ -61,6 +69,19 @@ export function interpolateArray(
     a.push(interpolate(i, borders, target, slope))
   }
   return a
+}
+
+export function stitch(
+  mid: number,
+  end: number,
+  dark: [number, number],
+  light: [number, number],
+  slopes: { fromDark: number; fromLight: number }
+) {
+  return [
+    ...interpolateArray([0, mid], dark, slopes.fromDark),
+    ...interpolateArray([mid, end], light, 1 - slopes.fromLight).slice(1),
+  ]
 }
 
 const b1 = (t: number) => t * t
