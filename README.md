@@ -92,6 +92,13 @@ Here’s a quick rundown of what you can tweak:
 
 - **count**: Decide how many shades you want to generate. The default is 10 shades, giving you a nice range from dark to light.
 
+### Flatness
+
+- **flatness**: Controls how strongly shades are normalized for perceptual uniformity. Defaults to `1`.
+  - `1` — fully flat: each shade hits its target perceptual brightness (Oklab L) exactly, so steps feel evenly spaced across any hue.
+  - `0` — no normalization: shades follow a raw HSL lightness ramp, letting each hue keep its natural perceptual weight (yellows read bright, blues read dark).
+  - Values in between blend the two — e.g. `0.5` keeps half the perceptual correction, adding a bit of life without fully abandoning uniformity.
+
 ### Luminance
 
 - **luminance**: Control the brightness boundaries of your palette.

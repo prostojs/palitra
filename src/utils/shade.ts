@@ -5,7 +5,7 @@
 import { color } from './colors'
 import { isCloseEnough } from './utils'
 
-export function shade(h: number, s: number, targetPbr: number) {
+export function shade(h: number, s: number, targetPbr: number, flatness = 1) {
   let l = 0.5
   const getColor = () => color(h, s, l, 'hsl')
   let current = getColor()
@@ -35,6 +35,13 @@ export function shade(h: number, s: number, targetPbr: number) {
       continue
     }
     break
+  }
+  if (flatness < 1) {
+    const lSolved = l
+    const lRaw = Math.min(1, Math.max(0, targetPbr))
+    l = lRaw + (lSolved - lRaw) * flatness
+    current = getColor()
+    pbr = current.oklab()[0]
   }
   return {
     color: current,

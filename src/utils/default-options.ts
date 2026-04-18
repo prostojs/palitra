@@ -3,6 +3,7 @@ import type { TScaleOptions } from '../types'
 export const defaultOptions: TScaleOptions = {
   count: 10,
   preserveInputColor: false,
+  flatness: 1,
   luminance: {
     useMiddle: true,
     dark: 0.27,

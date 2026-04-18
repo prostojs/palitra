@@ -1,6 +1,7 @@
 export interface TScaleOptionsInput {
   count?: number
   preserveInputColor?: boolean
+  flatness?: number
   luminance?: TScaleOption & {
     useMiddle?: boolean
     middle?: number
@@ -12,6 +13,7 @@ export interface TScaleOptionsInput {
 export interface TScaleOptions {
   count: number
   preserveInputColor?: boolean
+  flatness: number
   luminance: Required<TScaleOption<Required<TShadeSlopes>>> & {
     useMiddle?: boolean
     middle: number

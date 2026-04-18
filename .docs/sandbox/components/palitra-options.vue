@@ -59,6 +59,14 @@ const modelValue = defineModel<Exclude<TPalitraColor<TScaleOptions>, string>>({
             :decimals="2"
           />
           <Slider
+            label="Flatness"
+            v-model="modelValue.flatness"
+            :min="0"
+            :max="1"
+            :step="0.01"
+            :decimals="2"
+          />
+          <Slider
             label="Slope from Light"
             v-model="modelValue.luminance.slopes.fromLight"
             :min="0"

@@ -48,6 +48,17 @@ describe('shades', () => {
       '#f1f0ff',
     ])
   })
+  it('flatness=1 matches default output', () => {
+    expect(scaleColor('blue', { ...opts, flatness: 1 }).toStrings()).toEqual(
+      scaleColor('blue', opts).toStrings()
+    )
+  })
+  it('flatness=0 produces different shades than default', () => {
+    const flat = scaleColor('blue', opts).toStrings()
+    const raw = scaleColor('blue', { ...opts, flatness: 0 }).toStrings()
+    expect(raw).not.toEqual(flat)
+    expect(raw).toHaveLength(flat.length)
+  })
   it('must work with alpha', () => {
     expect(scaleColor('#25fa5468', opts).toStrings()).toEqual([
       '#00390b68',

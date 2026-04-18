@@ -68,7 +68,7 @@ export function scaleColor(input: string, _opts?: TScaleOptionsInput): TDetailed
     if (Number.isNaN(targetHue)) {
       targetSat = 0
     }
-    const { color: shadeColor, pbr } = shade(targetHue, targetSat, targetPbr)
+    const { color: shadeColor, pbr } = shade(targetHue, targetSat, targetPbr, opts.flatness)
     const [r, g, b] = shadeColor.rgb()
     const outColor = a < 255 ? color(r, g, b, a, 'rgb') : shadeColor
     arr.push({ color: outColor.hex(), pbr, isDark: isDark(pbr) })

@@ -30,6 +30,39 @@ describe('shade', () => {
     expect(color(255, 255, 0, 'rgb').rgb()).toEqual(color(60, 1, 0.5, 'hsl').rgb())
     expect(color(255, 255, 0, 'rgb').oklab()).toEqual(color(60, 1, 0.5, 'hsl').oklab())
   })
+
+  describe('flatness', () => {
+    // Yellow hue: HSL l=0.5 yields Oklab L near 0.97, so the solver must push l
+    // far from targetPbr — giving a wide gap between "raw" and "solved" l for
+    // the blend tests to land meaningfully between.
+    const h = 60
+    const s = 1
+    const targetPbr = 0.5
+
+    it('flatness=1 matches default behavior and hits target Oklab L', () => {
+      const sDefault = shade(h, s, targetPbr)
+      const sOne = shade(h, s, targetPbr, 1)
+      expect(sOne.color.rgb()).toEqual(sDefault.color.rgb())
+      expect(Math.abs(sOne.pbr - targetPbr)).toBeLessThan(0.005)
+    })
+
+    it('flatness=0 skips normalization: HSL l equals target', () => {
+      const s0 = shade(h, s, targetPbr, 0)
+      const l = s0.color.hsl()[2]
+      expect(Math.abs(l - targetPbr)).toBeLessThan(0.005)
+    })
+
+    it('flatness=0.5 blends between raw and solved', () => {
+      const lFlat = shade(h, s, targetPbr, 1).color.hsl()[2]
+      const lRaw = shade(h, s, targetPbr, 0).color.hsl()[2]
+      const lMid = shade(h, s, targetPbr, 0.5).color.hsl()[2]
+      const low = Math.min(lFlat, lRaw)
+      const high = Math.max(lFlat, lRaw)
+      expect(lMid).toBeGreaterThan(low)
+      expect(lMid).toBeLessThan(high)
+      expect(Math.abs(lMid - (lRaw + lFlat) / 2)).toBeLessThan(0.005)
+    })
+  })
 })
 
 function prepareColor(input: string) {
